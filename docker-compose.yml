@@ -26,3 +26,4 @@ services:
     volumes:
        - ./src:/root/src
 
+    command: python main.py
