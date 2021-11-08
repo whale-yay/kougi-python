@@ -1,21 +1,24 @@
-import numpy as np
-import matplotlib.pyplot as plt
+import cv2
 
+cap = cv2.VideoCapture("./test.mp4")
 
-fig = plt.figure(tight_layout=True)
-a = np.array([-2, -1, -0.5, 0.5, 1, 2])
-n = np.arange(-5, 10, 1)
-u = np.ones(len(n))
-u[n < 0] = 0
+fps = 30
+codec = int(cv2.VideoWriter_fourcc(*'mp4v'))
+width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-for i, a_i in enumerate(a):
-    x = np.empty(len(n))
-    for j, n_i in enumerate(n):
-        x[j] = a_i ** n_i
-    ax = fig.add_subplot(3, 2, i + 1)
-    ax.stem(n, x, use_line_collection=True)
-    ax.set_ylabel('x(n)')
-    ax.set_xlabel('Time n a =' + str(a_i))
-    ax.grid()
+print('fps=', fps, 'size=', width, height)
+output = cv2.VideoWriter('./output.mp4', codec, fps, (width, height), False)
 
-fig.savefig("img.png")
+while True:
+    try:
+        ret, frame = cap.read()
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        output.write(gray)
+
+    except:
+        break
+
+cap.release()
+output.release()
