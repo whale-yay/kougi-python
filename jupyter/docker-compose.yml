@@ -8,5 +8,5 @@ services:
       - JUPYTER_ENABLE_LAB=yes
 
     volumes:
-      - ./work:/home/jovan/work
+      - ./work:/home/work
     command: start-notebook.sh --NotebookApp.token=''
