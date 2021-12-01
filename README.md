@@ -2,6 +2,6 @@
 
 ```
 git clone git@github.com:whale-yay/kougi-python.git
-ln -s ~/dotfiles/.env p/a/th/.env
+ln -s ~/dotfiles/.env path/to/.env
 docker-compose up
 ```
