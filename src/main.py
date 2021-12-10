@@ -1,25 +1,25 @@
-import numpy as np
-import matplotlib.pyplot as plt
+import cv2
 
-fig = plt.figure(tight_layout=True)
+cap = cv2.VideoCapture(0)
 
-ax = fig.add_subplot(1, 2, 1)
-ax.plot([-np.pi/4, -np.pi/4, np.pi/4, np.pi/4], [0, 1, 1, 0])
-ax.set_xlabel("Frequency $\omega$ [rad]")
-ax.set_ylabel("$|X(e^{j\omega})|$")
-ax.set_xlim(-np.pi, np.pi)
-ax.set_ylim(0, 1.5)
-ax.grid()
+avg = None
 
-n = np.arange(-20, 20, 1)
-wc = np.pi/4
-x = (wc/np.pi)*np.sinc(n*wc/np.pi)
-ax = fig.add_subplot(1, 2, 2)
-ax.stem(n, x)
-ax.set_xlim(-20, 20)
-ax.set_ylim(-0.1, 0.3)
-ax.set_xlabel("TIME $n$")
-ax.set_ylabel("$x[n]$")
-ax.grid()
+while True:
+    ret, frame = cap.read()
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    if avg is None:
+        avg = gray.copy().astype("float")
+        continue
 
-fig.savefig("yeah.png")
+    cv2.accumulateWeighted(gray, avg, 0.3)
+    frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(avg))
+
+    thresh = cv2.threshold(frameDelta, 3, 255, cv2.THRESH_BINARY)[1]
+    contours, hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    frame = cv2.drawContours(frame, contours, -1, (0, 255, 0), 3)
+    cv2.imshow('frame', frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
